@@ -1,5 +1,9 @@
 #!/bin/bash
-
+# @Author: Kubehan
+# @Date:   2024-07-20 11:06:31
+# @Last Modified by:    Kubehan
+# @Last Modified time: 2024-07-21 11:06:31
+# @E-mail: kubehan@163.com
 # 显示脚本的用法
 usage() {
     echo "Usage: $0 [OPTIONS] --jsonlog LOGFILE"

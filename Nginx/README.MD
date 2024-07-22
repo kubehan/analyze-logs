@@ -6,7 +6,7 @@
 
 前置条件：Nginx 日志格式如下：
 
-```json
+```shell
 {"time_local":"$time_iso8601", "msec": $msec, "remote_addr":
             "$remote_addr", "remote_user": "$remote_user", "body_bytes_sent": $body_bytes_sent,
             "content_length": "$content_length", "upstream_response_length": "$upstream_response_length",

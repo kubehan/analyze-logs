@@ -7,7 +7,7 @@
 前置条件：Nginx 日志格式如下：
 
 ```json
-''{"time_local":"$time_iso8601", "msec": $msec, "remote_addr":
+{"time_local":"$time_iso8601", "msec": $msec, "remote_addr":
             "$remote_addr", "remote_user": "$remote_user", "body_bytes_sent": $body_bytes_sent,
             "content_length": "$content_length", "upstream_response_length": "$upstream_response_length",
             "upstream_addr": "$upstream_addr", "upstream_connect_time": "$upstream_connect_time",
@@ -19,7 +19,7 @@
             "$upstream_status", "http_host": "$http_host", "http_referrer": "$http_referer",
             "http_x_forwarded_for": "$http_x_forwarded_for", "sla_appname": "$cookie_sla_appname",
             "http_user_agent": "$http_user_agent", "host": "$host", "request": "$request",
-            "server_addr": "$server_addr", "request_id": "$http_x_request_id"}'''
+            "server_addr": "$server_addr", "request_id": "$http_x_request_id"}
 ```
 
 顺序不要紧，只需要保证对应的字段存在就行啦。

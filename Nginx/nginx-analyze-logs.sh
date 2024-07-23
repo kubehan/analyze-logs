@@ -9,7 +9,9 @@ usage() {
     echo "Usage: $0 [OPTIONS] --jsonlog LOGFILE"
     echo "Options:"
     echo "  --jsonlog LOGFILE              Specify the JSON log file"
-    echo "  --time_local TIME_RANGE        Filter by time_local"
+#    echo "  --time_local TIME_RANGE        Filter by time_local"
+    echo "  --start_time                   Filter by time_local"
+    echo "  --end_time                     Filter by time_local"
     echo "  --http_status STATUS_RANGE     Filter by http_status, supports range (MIN-MAX)"
     echo "  --request_time TIME_RANGE      Filter by request_time, supports range (MIN-MAX)"
     echo "  --upstream_response_time TIME_RANGE Filter by upstream_response_time, supports range (MIN-MAX)"
@@ -31,6 +33,8 @@ while [[ "$1" != "" ]]; do
         --help ) usage ;;
         --jsonlog ) shift; JSONLOG=$1 ;;
         --time_local ) shift; TIME_LOCAL_RANGE=$1 ;;
+        --start_time ) shift; START_TIME=$1 ;;
+        --end_time ) shift; END_TIME=$1 ;;
         --http_status ) shift; HTTP_STATUS=$1 ;;
         --request_time ) shift; REQUEST_TIME_RANGE=$1 ;;
         --upstream_response_time ) shift; UPSTREAM_RESPONSE_TIME_RANGE=$1 ;;
@@ -55,12 +59,16 @@ fi
 
 jq_query=". | select("
 # 判断所有参数是否为空
-    if [[ -z $TIME_LOCAL_RANGE && -z $HTTP_STATUS && -z $REQUEST_TIME_RANGE && -z $UPSTREAM_RESPONSE_TIME_RANGE && -z $HOST && -z $REQUEST_URI && -z $REQUEST_METHOD && -z $UPSTREAM_STATUS && -z $SERVER_ADDR && -z $UPSTREAM_ADDR && -z $URI ]]; then
+    if [[ -z $START_TIME  && $$END_TIME  && -z $HTTP_STATUS && -z $REQUEST_TIME_RANGE && -z $UPSTREAM_RESPONSE_TIME_RANGE && -z $HOST && -z $REQUEST_URI && -z $REQUEST_METHOD && -z $UPSTREAM_STATUS && -z $SERVER_ADDR && -z $UPSTREAM_ADDR && -z $URI ]]; then
     jq_query=". | select(."
     fi
-    if [[ ! -z $TIME_LOCAL_RANGE ]]; then
-        jq_query+=".time_local >= \"$TIME_LOCAL_RANGE\" and "
+    if [[ ! -z $START_TIME && $END_TIME ]]; then
+            jq_query+=".time_local >= \"$START_TIME\" and .time_local <= \"$END_TIME\" and "
     fi
+#    if [[ ! -z $TIME_LOCAL_RANGE && $TIME_LOCAL_RANGE == *-* ]]; then
+#        IFS='-' read -r MIN_TIME MAX_TIME <<< "$TIME_LOCAL_RANGE"
+#        jq_query+=".time_local >= \"$MIN_TIME\" and .time_local <= \"$MAX_TIME\" and "
+#    fi
 
     if [[ ! -z $HTTP_STATUS && $HTTP_STATUS == *-* ]]; then
         IFS='-' read -r MIN_STATUS MAX_STATUS <<< "$HTTP_STATUS"

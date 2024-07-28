@@ -8,8 +8,9 @@
 usage() {
     echo "Usage: $0 [OPTIONS] --jsonlog LOGFILE"
     echo "Options:"
+    echo "example: bash $0    --jsonlog  json.log  --start_time "2024-07-23T15:50:00+08:00" --end_time "2024-07-23T15:51:59+08:00" --report"
+    echo "         bash $0    --jsonlog  json.log   --uri /api/v1/query"
     echo "  --jsonlog LOGFILE              Specify the JSON log file"
-#    echo "  --time_local TIME_RANGE        Filter by time_local"
     echo "  --start_time                   Filter by time_local"
     echo "  --end_time                     Filter by time_local"
     echo "  --http_status STATUS_RANGE     Filter by http_status, supports range (MIN-MAX)"
@@ -21,6 +22,7 @@ usage() {
     echo "  --upstream_status STATUS       Filter by upstream_status"
     echo "  --server_addr ADDRESS          Filter by server_addr"
     echo "  --upstream_addr ADDRESS        Filter by upstream_addr"
+    echo "  --request_id REQUEST_ID        Filter by request_id"
     echo "  --uri URI                      Filter by uri"
     echo "  --report                       Output report"
     echo "  --help                         Display this help message"
@@ -44,6 +46,7 @@ while [[ "$1" != "" ]]; do
         --upstream_status ) shift; UPSTREAM_STATUS=$1 ;;
         --server_addr ) shift; SERVER_ADDR=$1 ;;
         --upstream_addr ) shift; UPSTREAM_ADDR=$1 ;;
+        --request_id ) shift; REQUEST_ID=$1 ;;
         --uri ) shift; URI=$1 ;;
         --report ) REPORT=1 ;;
         * ) echo "Unknown option: $1"; usage ;;
@@ -59,16 +62,13 @@ fi
 
 jq_query=". | select("
 # 判断所有参数是否为空
-    if [[ -z $START_TIME  && $$END_TIME  && -z $HTTP_STATUS && -z $REQUEST_TIME_RANGE && -z $UPSTREAM_RESPONSE_TIME_RANGE && -z $HOST && -z $REQUEST_URI && -z $REQUEST_METHOD && -z $UPSTREAM_STATUS && -z $SERVER_ADDR && -z $UPSTREAM_ADDR && -z $URI ]]; then
+    if [[ -z $START_TIME  && $$END_TIME  && -z $HTTP_STATUS && -z $REQUEST_TIME_RANGE && -z $UPSTREAM_RESPONSE_TIME_RANGE && -z $HOST && -z $REQUEST_URI && -z $REQUEST_METHOD && -z $UPSTREAM_STATUS && -z $SERVER_ADDR && -z $UPSTREAM_ADDR && -z $URI & -z $REQUEST_ID ]]; then
     jq_query=". | select(."
     fi
     if [[ ! -z $START_TIME && $END_TIME ]]; then
             jq_query+=".time_local >= \"$START_TIME\" and .time_local <= \"$END_TIME\" and "
     fi
-#    if [[ ! -z $TIME_LOCAL_RANGE && $TIME_LOCAL_RANGE == *-* ]]; then
-#        IFS='-' read -r MIN_TIME MAX_TIME <<< "$TIME_LOCAL_RANGE"
-#        jq_query+=".time_local >= \"$MIN_TIME\" and .time_local <= \"$MAX_TIME\" and "
-#    fi
+
 
     if [[ ! -z $HTTP_STATUS && $HTTP_STATUS == *-* ]]; then
         IFS='-' read -r MIN_STATUS MAX_STATUS <<< "$HTTP_STATUS"
@@ -107,6 +107,9 @@ jq_query=". | select("
     fi
     if [[ ! -z $URI ]]; then
         jq_query+=".uri == \"$URI\" and "
+    fi
+    if [[ ! -z $REQUEST_ID ]]; then
+        jq_query+=".request_id == \"$REQUEST_ID\" and "
     fi
 
 # 去掉末尾的 " and "

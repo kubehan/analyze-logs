@@ -62,7 +62,7 @@ fi
 
 jq_query=". | select("
 # 判断所有参数是否为空
-    if [[ -z $START_TIME  && $$END_TIME  && -z $HTTP_STATUS && -z $REQUEST_TIME_RANGE && -z $UPSTREAM_RESPONSE_TIME_RANGE && -z $HOST && -z $REQUEST_URI && -z $REQUEST_METHOD && -z $UPSTREAM_STATUS && -z $SERVER_ADDR && -z $UPSTREAM_ADDR && -z $URI & -z $REQUEST_ID ]]; then
+    if [[ -z $START_TIME  && $END_TIME  && -z $HTTP_STATUS && -z $REQUEST_TIME_RANGE && -z $UPSTREAM_RESPONSE_TIME_RANGE && -z $HOST && -z $REQUEST_URI && -z $REQUEST_METHOD && -z $UPSTREAM_STATUS && -z $SERVER_ADDR && -z $UPSTREAM_ADDR && -z $URI && -z $REQUEST_ID ]]; then
     jq_query=". | select(."
     fi
     if [[ ! -z $START_TIME && $END_TIME ]]; then
